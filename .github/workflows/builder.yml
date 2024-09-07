@@ -19,22 +19,10 @@ jobs:
       # 检出代码
       - uses: actions/checkout@v3
 
-      # 下载GoogleChromePortable
-      - name: download GoogleChromePortable
-        if: steps.cache-GoogleChromePortable.outputs.cache-hit != 'true'
+      # 提取GoogleChromePortable
+      - name: extract GoogleChromePortable
         run: |
-          mkdir GoogleChromePortable
-          cd GoogleChromePortable
-          Invoke-WebRequest -Uri https://download2.portableapps.com/portableapps/GoogleChromePortable/${{ env.GCP_PKG_NAME }} -OutFile ${{ env.GCP_PKG_NAME }}
           7z x ${{ env.GCP_PKG_NAME }} -aoa
-      
-      # 缓存GoogleChromePortable
-      - name: cache-GoogleChromePortable
-        id: cache-GoogleChromePortable
-        uses: actions/cache@v1
-        with:
-          path: "GoogleChromePortable/${{ env.GCP_PKG_NAME }}"
-          key: ${{ env.GCP_PKG_NAME }}
 
       # 提取Chrome
       - name: extract chrome
@@ -46,7 +34,7 @@ jobs:
       - name: 7zip
         run: |
           mkdir ${{ env.PRODUCT_NAME }}
-          cp GoogleChromePortable/GoogleChromePortable.exe ${{ env.PRODUCT_NAME }}/
+          cp GoogleChromePortable.exe ${{ env.PRODUCT_NAME }}
           mkdir ${{ env.PRODUCT_NAME }}/App
           cp -r Chrome-bin ${{ env.PRODUCT_NAME }}/App
           7z a ${{ env.PRODUCT_NAME }}.exe -sfx ${{ env.PRODUCT_NAME }}
