@@ -1,0 +1,46 @@
+name: Builder
+
+on:
+  workflow_dispatch:
+
+jobs:
+
+  windows-vs2019:
+    runs-on: windows-2019
+
+    env:
+      GCP_PKG_NAME: GoogleChromePortable_128.0.6613.120_online.paf.exe
+      CHROME_PKG_NAME: 49.0.2623.75_chrome64_stable_windows_installer.exe
+      PRODUCT_NAME: Chrome_49.0.2623.75
+
+    steps:
+      # 检出代码
+      - uses: actions/checkout@v3
+
+      # 下载GoogleChromePortable
+      - name: download GoogleChromePortable
+        run: |
+          mkdir GoogleChromePortable
+          cd GoogleChromePortable
+          Invoke-WebRequest -Uri https://download2.portableapps.com/portableapps/GoogleChromePortable/${{ env.GCP_PKG_NAME }} -OutFile ${{ env.GCP_PKG_NAME }}
+          7z x ${{ env.GCP_PKG_NAME }} -aoa
+
+      # 提取Chrome
+      - name: chrome
+        run: |
+          7z x ${{ env.CHROME_PKG_NAME }} -aoa
+          7z x chrome.7z -aoa
+
+      # 使用7z压缩
+      - name: 7zip
+        run: |
+          mkdir ${{ env.PRODUCT_NAME }}
+          cp GoogleChromePortable/GoogleChromePortable.exe ${{ env.PRODUCT_NAME }}/
+          7z a ${{ env.PRODUCT_NAME }}.7z ${{ env.PRODUCT_NAME }}
+      
+      # 上传artifact
+      - name: upload
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ env.PRODUCT_NAME }}
+          path: ${{ env.PRODUCT_NAME }}.7z
