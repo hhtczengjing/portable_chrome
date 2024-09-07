@@ -50,7 +50,8 @@ jobs:
           mkdir ${{ env.PRODUCT_NAME }}/App
           cp -r Chrome-bin ${{ env.PRODUCT_NAME }}/App
           7z a archive.7z ${{ env.PRODUCT_NAME }} -mx0
-          copy /b ".\7zip\7z.sfx" + ".\7zip\config.txt" + archive.7z ${{ env.PRODUCT_NAME }}.exe
+          ls
+          copy /b 7zip/7z.sfx + 7zip/config.txt + archive.7z ${{ env.PRODUCT_NAME }}.exe
 
       # 上传artifact
       - name: upload
