@@ -2,6 +2,8 @@ name: Builder
 
 on:
   workflow_dispatch:
+  push:
+    branches: ["master"]
 
 jobs:
 
@@ -44,15 +46,17 @@ jobs:
       - name: 7zip
         run: |
           mkdir ${{ env.PRODUCT_NAME }}
-          ls
           cp GoogleChromePortable/GoogleChromePortable.exe ${{ env.PRODUCT_NAME }}/
           mkdir ${{ env.PRODUCT_NAME }}/App
           cp -r Chrome-bin ${{ env.PRODUCT_NAME }}/App
-          7z a ${{ env.PRODUCT_NAME }}.7z ${{ env.PRODUCT_NAME }}
-      
+          del archive.7z
+          del archive.exe
+          7z a archive.7z ${{ env.PRODUCT_NAME }} -mx0
+          copy /b ".\7zip\7z.sfx" + ".\7zip\config.txt" + archive.7z ${{ env.PRODUCT_NAME }}.exe
+
       # 上传artifact
       - name: upload
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ env.PRODUCT_NAME }}
-          path: ${{ env.PRODUCT_NAME }}.7z
+          path: ${{ env.PRODUCT_NAME }}.exe
