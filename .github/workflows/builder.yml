@@ -31,24 +31,23 @@ jobs:
         id: cache-GoogleChromePortable
         uses: actions/cache@v1
         with:
-          path: "GoogleChromePortable"
+          path: "GoogleChromePortable/${{ env.GCP_PKG_NAME }}"
           key: ${{ env.GCP_PKG_NAME }}
 
       # 提取Chrome
       - name: extract chrome
         run: |
           7z x ${{ env.CHROME_PKG_NAME }} -aoa
-          ls
           7z x chrome.7z -aoa
-          ls
 
       # 使用7z压缩
       - name: 7zip
         run: |
           mkdir ${{ env.PRODUCT_NAME }}
+          ls
           cp GoogleChromePortable/GoogleChromePortable.exe ${{ env.PRODUCT_NAME }}/
           mkdir ${{ env.PRODUCT_NAME }}/App
-          cp -r chrome/Chrome-bin ${{ env.PRODUCT_NAME }}/App
+          cp -r Chrome-bin ${{ env.PRODUCT_NAME }}/App
           7z a ${{ env.PRODUCT_NAME }}.7z ${{ env.PRODUCT_NAME }}
       
       # 上传artifact
